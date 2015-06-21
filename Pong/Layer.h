@@ -26,6 +26,6 @@ public:
 	void Clear_All_Physics_Objects();
 	void Check_All_Buttons(int& Button, float x, float y, float cx, float cy);
 	void Run_All_Particals();
-	void Run_All_Physics();
+	int Run_All_Physics();
 	void Initilize_Object(int Catagory);
 };

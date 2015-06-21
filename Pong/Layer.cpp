@@ -80,10 +80,12 @@ void Layer::Run_All_Particals(){
 		Partical_Objects[i]->Run_Particals();
 	}
 }
-void Layer::Run_All_Physics(){
+int Layer::Run_All_Physics(){
+	int Return = 0;
 	for (unsigned i = 0; i < Physics_Objects.size(); i++){
-		Physics_Objects[i]->Run_Physics();
+		Return = Physics_Objects[i]->Run_Physics();
 	}
+	return(Return);
 }
 void Layer::Initilize_Object(int Catagory){
 	Object* Initilize = new Object();

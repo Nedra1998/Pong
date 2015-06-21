@@ -1194,12 +1194,13 @@ void Object::Set_Collsion_Objects(vector<Object*> Collisions, int Start, int Ign
 	}
 	Physics->Set_Collision_Set(Collisions, Start, Ignore);
 }
-void Object::Run_Physics(){
-	int Return = -3;
+int Object::Run_Physics(){
+	int Return = -3, Final;
 	float Distance_X, Distance_Y, Tic = (float)1/(float)60;
 	Distance_X = (Velocity_X *Tic) + (0.5 * Acceleration_X * (Tic * Tic));
 	Distance_Y = (Velocity_Y *Tic) + (0.5 * Acceleration_Y * (Tic * Tic));
 	Return = Physics->Move_Object(Distance_X, 0.0, 0.0, 0, 0.05);
+	Final = Return;
 	if (Return != -1){
 		Velocity_X = -1 * (Velocity_X * (Reflection_Percent / (float)100));
 	}
@@ -1207,6 +1208,7 @@ void Object::Run_Physics(){
 		Collision_Objects[Return]->Add_Velocity_Physics_Object(-1* Velocity_X * (Transfer_Percent / (float)100), 0.0, 0.0);
 		Velocity_X = Velocity_X - Velocity_X * (Transfer_Percent / (float)100);
 	}
+	Return = Physics->Move_Object(0.0, Distance_Y, 0.0, 0, 0.05);
 	if (Return != -1){
 		Velocity_Y = -1 * (Velocity_Y * (Reflection_Percent / (float)100));
 	}
@@ -1216,4 +1218,15 @@ void Object::Run_Physics(){
 	}
 	Velocity_X = Velocity_X + (Acceleration_X * Tic);
 	Velocity_Y = Velocity_Y + (Acceleration_Y * Tic);
+	if (Final != -1){
+		return(1);
+	}
+}
+float Object::Return_Physics_Data(int Value){
+	if (Value == 1){
+		return(Velocity_X);
+	}
+	if (Value == 2){
+		return(Velocity_Y);
+	}
 }
