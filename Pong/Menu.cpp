@@ -40,7 +40,7 @@ void Menu::Run_Menu_Program(Hephaestus H, GLFWwindow* W){
 			Delay = 10;
 		}
 		if (Load >= 10){
-			G_Menu.Run_Game_Program(Load - 9);
+			G_Menu.Run_Game_Program(Load - 9, H_Menu, W_Menu);
 			Load = 1;
 			Stage = 1;
 			Delay = 10;
