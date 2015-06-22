@@ -13,6 +13,7 @@ void Key_Call(GLFWwindow* Win, int key, int scancode, int action, int mods){
 void Mouse_Call(GLFWwindow* Win, int button, int action, int mods){
 	H.Mouse_Call_Back(Win, button, action, mods);
 	M.H_Menu.Mouse_Call_Back(Win, button, action, mods);
+	M.Mouse_Call(Win, button, action, mods);
 }
 void Window_Call(GLFWwindow* Win, int width, int hight){
 	glfwSetWindowSize(Win, width, hight);
