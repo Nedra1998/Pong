@@ -1,4 +1,4 @@
-Sun Jun 21 21:53:13 2015
+Mon Jun 22 07:42:34 2015
 [SUCCESS]>>Opened Log File<<[Logging]
 [SUCCESS]>>Loaded Window Data<<[Window]
 [INFORMATION]>>Windowed Mode Enabled<<[Window]
@@ -12,5 +12,3 @@ Sun Jun 21 21:53:13 2015
 [SUCCESS]>>Opened Textured Fragment Shader.txt<<[Shaders]
 [SUCCESS]>>Opened Colored Vertex Shader.txt<<[Shaders]
 [SUCCESS]>>Opened Colored Fragment Shader.txt<<[Shaders]
-[SUCCESS]>>Closed Log File<<[Logging]
-Sun Jun 21 21:53:31 2015
