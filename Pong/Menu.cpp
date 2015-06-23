@@ -103,6 +103,10 @@ void Menu::Run_Menu_Program(Hephaestus H, GLFWwindow* W){
 						Load = 6;
 					}
 					if (Button == 4){
+						Mode = 14;
+						Load = 6;
+					}
+					if (Button == 5){
 						Load = 1;
 					}
 				}
@@ -178,7 +182,6 @@ void Menu::Run_Menu_Program(Hephaestus H, GLFWwindow* W){
 				}
 				else if (Stage == 6){
 					if (Button != 4 && Button != -1){
-						cout << "HI\n";
 						Difficulty = Button;
 						Load = Mode;
 					}
@@ -280,11 +283,14 @@ void Menu::Single_Player_Menu_1(){
 	H_Menu.Layers[1]->Button_Objects[2]->New_Button_Object("/Power Up/", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
 	H_Menu.Layers[1]->Button_Objects[2]->Translate_Button_Object(0.0, -0.2, 0.0);
 	H_Menu.Layers[1]->Initilize_Object(4);
-	H_Menu.Layers[1]->Button_Objects[3]->New_Button_Object("SID/Arena/SID", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
+	H_Menu.Layers[1]->Button_Objects[3]->New_Button_Object("/Arena/", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
 	H_Menu.Layers[1]->Button_Objects[3]->Translate_Button_Object(0.0, -0.4, 0.0);
 	H_Menu.Layers[1]->Initilize_Object(4);
-	H_Menu.Layers[1]->Button_Objects[4]->New_Button_Object("/Back/", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
+	H_Menu.Layers[1]->Button_Objects[4]->New_Button_Object("/1V3/", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
 	H_Menu.Layers[1]->Button_Objects[4]->Translate_Button_Object(0.0, -0.6, 0.0);
+	H_Menu.Layers[1]->Initilize_Object(4);
+	H_Menu.Layers[1]->Button_Objects[5]->New_Button_Object("/Back/", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
+	H_Menu.Layers[1]->Button_Objects[5]->Translate_Button_Object(0.0, -0.8, 0.0);
 }
 void Menu::Single_Player_Menu_2(){
 	H_Menu.Layers[0]->Initilize_Object(4);

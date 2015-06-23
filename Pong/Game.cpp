@@ -50,6 +50,9 @@ void Game::Run_Game_Program(int mode, Hephaestus H, GLFWwindow* W, bool Mouse, i
 				}
 			}
 		}
+		if (glfwGetKey(W_Game, GLFW_KEY_ESCAPE)){
+			Game_Good = -1;
+		}
 		float paddle, ball, Distance;
 		paddle = H_Game.Layers[1]->Colored_Objects[1]->Return_Float_Value(3);
 		ball = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(3);
@@ -77,27 +80,82 @@ void Game::Run_Game_Program(int mode, Hephaestus H, GLFWwindow* W, bool Mouse, i
 		if (Collision == 1){
 			Paddle_Speed = Paddle_Speed + (Paddle_Speed * .05);
 			Paddle_Speed_2 = Paddle_Speed_2 + (Paddle_Speed_2 * .05);
-			float  Y_Paddle = 0.0, Y_Ball, VY, VX;
+			float  Y_Paddle = 0.0, X_Paddle, Y_Ball, X_Ball, VY, VX;
 			Collision = 0;
-			Y_Ball = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(3);
-			if (H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2) > 0){
-				Y_Paddle = H_Game.Layers[1]->Colored_Objects[1]->Return_Float_Value(3);
+			if (Mode != 4 && Mode != 5){
+				Y_Ball = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(3);
+				if (H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2) > 0){
+					Y_Paddle = H_Game.Layers[1]->Colored_Objects[1]->Return_Float_Value(3);
+				}
+				if (H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2) < 0){
+					Y_Paddle = H_Game.Layers[1]->Colored_Objects[0]->Return_Float_Value(3);
+				}
+				Y_Ball = Y_Ball - Y_Paddle;
+				VX = H_Game.Layers[1]->Physics_Objects[0]->Return_Physics_Data(1);
+				VY = H_Game.Layers[1]->Physics_Objects[0]->Return_Physics_Data(2);
+
+				VY = VY + (VX * Y_Ball) * 10;
 			}
-			if (H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2) < 0){
-				Y_Paddle = H_Game.Layers[1]->Colored_Objects[0]->Return_Float_Value(3);
+			if (Mode == 4 || Mode == 5){
+				float PX, PY;
+				PX = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2);
+				PY = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(3);
+				if (PX < -0.8){
+					Last_Hit = 1;
+				}
+				if (PX > 0.8){
+					Last_Hit = 2;
+				}
+				if (PY < -0.8){
+					Last_Hit = 4;
+				}
+				if (PY > 0.8){
+					Last_Hit = 3;
+				}
+				X_Ball = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2);
+				Y_Ball = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(3);
+				if (Last_Hit == 3){
+					X_Paddle = H_Game.Layers[1]->Colored_Objects[2]->Return_Float_Value(2);
+				}
+				if (Last_Hit == 4){
+					X_Paddle = H_Game.Layers[1]->Colored_Objects[3]->Return_Float_Value(2);
+				}
+				if (Last_Hit == 3 || Last_Hit == 4){
+					X_Ball = X_Ball - X_Paddle;
+					VX = H_Game.Layers[1]->Physics_Objects[0]->Return_Physics_Data(1);
+					VY = H_Game.Layers[1]->Physics_Objects[0]->Return_Physics_Data(2);
+					VX = VX + (VY * X_Ball) * 10;
+				}
+				if (Last_Hit == 1){
+					Y_Paddle = H_Game.Layers[1]->Colored_Objects[0]->Return_Float_Value(3);
+				}
+				if (Last_Hit == 2){
+					Y_Paddle = H_Game.Layers[1]->Colored_Objects[1]->Return_Float_Value(3);
+				}
+				if (Last_Hit == 1 || Last_Hit == 2){
+					Y_Ball = Y_Ball - Y_Paddle;
+					VX = H_Game.Layers[1]->Physics_Objects[0]->Return_Physics_Data(1);
+					VY = H_Game.Layers[1]->Physics_Objects[0]->Return_Physics_Data(2);
+					VY = VY + (VX * Y_Ball) * 10;
+				}
 			}
-			Y_Ball = Y_Ball - Y_Paddle;
-			VX = H_Game.Layers[1]->Physics_Objects[0]->Return_Physics_Data(1);
-			VY = H_Game.Layers[1]->Physics_Objects[0]->Return_Physics_Data(2);
-			VY = VY + (VX * Y_Ball) * 10;
 			H_Game.Layers[1]->Physics_Objects[0]->Set_Velocity_Physics_Object(VX, VY, 0.0);
 		}
 
-
+		Close();
 		H_Game.Display_All_Layers();
 		H_Game.Frame();
 	}
-	End_Screen();
+	if (Game_Good != -1){
+		End_Screen();
+	}
+}
+bool Game::Close(){
+	if (glfwWindowShouldClose(W_Game)){
+		Game_Good = -1;
+		return(true);
+	}
+	return(false);
 }
 void Game::Pre_Game(){
 	if (Mode == 1){
@@ -162,8 +220,48 @@ void Game::Pre_Game(){
 	}
 	if (Mode == 4){
 		Arena();
+		H_Game.Layers[1]->Physics_Objects[0]->Set_Collsion_Objects(H_Game.Layers[1]->Colored_Objects, 0, -1);
+		H_Game.Layers[1]->Colored_Objects[0]->Set_Collision_Set(H_Game.Layers[1]->Physics_Objects, 0, -1);
+		H_Game.Layers[1]->Colored_Objects[1]->Set_Collision_Set(H_Game.Layers[1]->Physics_Objects, 0, -1);
+		H_Game.Layers[1]->Colored_Objects[2]->Set_Collision_Set(H_Game.Layers[1]->Physics_Objects, 0, -1);
+		H_Game.Layers[1]->Colored_Objects[3]->Set_Collision_Set(H_Game.Layers[1]->Physics_Objects, 0, -1);
+		H_Game.Layers[1]->Colored_Objects[0]->Set_Collision_Set(H_Game.Layers[1]->Colored_Objects, 0, 0);
+		H_Game.Layers[1]->Colored_Objects[1]->Set_Collision_Set(H_Game.Layers[1]->Colored_Objects, 0, 1);
+		H_Game.Layers[1]->Colored_Objects[2]->Set_Collision_Set(H_Game.Layers[1]->Colored_Objects, 0, 2);
+		H_Game.Layers[1]->Colored_Objects[3]->Set_Collision_Set(H_Game.Layers[1]->Colored_Objects, 0, 3);
+		if (Difficulty == 0){
+			Paddle_Speed_2 = Paddle_Speed_2 * 2;
+			Ball_Speed = Ball_Speed * 2;
+		}
+		if (Difficulty == 1){
+			Paddle_Speed_2 = Paddle_Speed_2 * 2;
+		}
+		if (Difficulty == 3){
+			Paddle_Speed_2 = Paddle_Speed_2 / 2;
+		}
 	}
-
+	if (Mode == 5){
+		OneVAll();
+		H_Game.Layers[1]->Physics_Objects[0]->Set_Collsion_Objects(H_Game.Layers[1]->Colored_Objects, 0, -1);
+		H_Game.Layers[1]->Colored_Objects[0]->Set_Collision_Set(H_Game.Layers[1]->Physics_Objects, 0, -1);
+		H_Game.Layers[1]->Colored_Objects[1]->Set_Collision_Set(H_Game.Layers[1]->Physics_Objects, 0, -1);
+		H_Game.Layers[1]->Colored_Objects[2]->Set_Collision_Set(H_Game.Layers[1]->Physics_Objects, 0, -1);
+		H_Game.Layers[1]->Colored_Objects[3]->Set_Collision_Set(H_Game.Layers[1]->Physics_Objects, 0, -1);
+		H_Game.Layers[1]->Colored_Objects[0]->Set_Collision_Set(H_Game.Layers[1]->Colored_Objects, 0, 0);
+		H_Game.Layers[1]->Colored_Objects[1]->Set_Collision_Set(H_Game.Layers[1]->Colored_Objects, 0, 1);
+		H_Game.Layers[1]->Colored_Objects[2]->Set_Collision_Set(H_Game.Layers[1]->Colored_Objects, 0, 2);
+		H_Game.Layers[1]->Colored_Objects[3]->Set_Collision_Set(H_Game.Layers[1]->Colored_Objects, 0, 3);
+		if (Difficulty == 0){
+			Paddle_Speed_2 = Paddle_Speed_2 * 2;
+			Ball_Speed = Ball_Speed * 2;
+		}
+		if (Difficulty == 1){
+			Paddle_Speed_2 = Paddle_Speed_2 * 2;
+		}
+		if (Difficulty == 3){
+			Paddle_Speed_2 = Paddle_Speed_2 / 2;
+		}
+	}
 	Base_2 = Paddle_Speed_2;
 	H_Game.Layers[1]->Physics_Objects[0]->Set_Velocity_Physics_Object(-Ball_Speed, 0.0, 0.0);
 	Game_Good = 0;
@@ -437,6 +535,78 @@ void Game::Every_Turn(){
 			}
 		}
 	}
+	if (Mode == 4){
+		if(Score_1 == 10){
+			Game_Good = 1;
+		}
+		if (Score_2 == 10){
+			Game_Good = 2;
+		}
+		if (Score_3 == 10){
+			Game_Good = 2;
+		}
+		if (Score_4 == 10){
+			Game_Good = 2;
+		}
+		float paddle, ball, Distance;
+		paddle = H_Game.Layers[1]->Colored_Objects[2]->Return_Float_Value(2);
+		ball = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2);
+		if (paddle > ball + 0.005){
+			Distance = (paddle - ball);
+			if (Distance < Paddle_Speed_2){
+				H_Game.Layers[1]->Colored_Objects[2]->Move_Object(-Distance, 0.0, 0.0, 0, 0.1);
+				H_Game.Layers[1]->Colored_Objects[3]->Move_Object(-Distance, 0.0, 0.0, 0, 0.1);
+			}
+			else{
+				H_Game.Layers[1]->Colored_Objects[2]->Move_Object(-Paddle_Speed_2, 0.0, 0.0, 0, 0.1);
+				H_Game.Layers[1]->Colored_Objects[3]->Move_Object(-Paddle_Speed_2, 0.0, 0.0, 0, 0.1);
+			}
+		}
+		else if (paddle < ball - 0.005){
+			Distance = (paddle - ball);
+			if (-Distance < Paddle_Speed_2){
+				H_Game.Layers[1]->Colored_Objects[2]->Move_Object(-Distance, 0.0, 0.0, 0, 0.1);
+				H_Game.Layers[1]->Colored_Objects[3]->Move_Object(-Distance, 0.0, 0.0, 0, 0.1);
+			}
+			else{
+				H_Game.Layers[1]->Colored_Objects[2]->Move_Object(Paddle_Speed_2, 0.0, 0.0, 0, 0.1);
+				H_Game.Layers[1]->Colored_Objects[3]->Move_Object(Paddle_Speed_2, 0.0, 0.0, 0, 0.1);
+			}
+		}
+	}
+	if (Mode == 5){
+		if (Score_1 == 10){
+			Game_Good = 1;
+		}
+		if (Score_2 == 10){
+			Game_Good = 2;
+		}
+		float paddle, ball, Distance;
+		paddle = H_Game.Layers[1]->Colored_Objects[2]->Return_Float_Value(2);
+		ball = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2);
+		if (paddle > ball + 0.005){
+			Distance = (paddle - ball);
+			if (Distance < Paddle_Speed_2){
+				H_Game.Layers[1]->Colored_Objects[2]->Move_Object(-Distance, 0.0, 0.0, 0, 0.1);
+				H_Game.Layers[1]->Colored_Objects[3]->Move_Object(-Distance, 0.0, 0.0, 0, 0.1);
+			}
+			else{
+				H_Game.Layers[1]->Colored_Objects[2]->Move_Object(-Paddle_Speed_2, 0.0, 0.0, 0, 0.1);
+				H_Game.Layers[1]->Colored_Objects[3]->Move_Object(-Paddle_Speed_2, 0.0, 0.0, 0, 0.1);
+			}
+		}
+		else if (paddle < ball - 0.005){
+			Distance = (paddle - ball);
+			if (-Distance < Paddle_Speed_2){
+				H_Game.Layers[1]->Colored_Objects[2]->Move_Object(-Distance, 0.0, 0.0, 0, 0.1);
+				H_Game.Layers[1]->Colored_Objects[3]->Move_Object(-Distance, 0.0, 0.0, 0, 0.1);
+			}
+			else{
+				H_Game.Layers[1]->Colored_Objects[2]->Move_Object(Paddle_Speed_2, 0.0, 0.0, 0, 0.1);
+				H_Game.Layers[1]->Colored_Objects[3]->Move_Object(Paddle_Speed_2, 0.0, 0.0, 0, 0.1);
+			}
+		}
+	}
 }
 void Game::Score(){
 	Point = Check_For_Point();
@@ -505,6 +675,50 @@ void Game::Score(){
 				}
 			}
 		}
+		if (Mode == 4){
+			if (Point == 1){
+				if (Last_Hit == 1){
+					Score_1++;
+					H_Game.Layers[0]->Button_Objects[0]->Edit_Button_Object(to_string(Score_1));
+				}
+				if (Last_Hit == 2){
+					Score_2++;
+					H_Game.Layers[0]->Button_Objects[1]->Edit_Button_Object(to_string(Score_2));
+				}
+				if (Last_Hit == 3){
+					Score_3++;
+					H_Game.Layers[0]->Button_Objects[2]->Edit_Button_Object(to_string(Score_3));
+				}
+				if (Last_Hit == 4){
+					Score_4++;
+					H_Game.Layers[0]->Button_Objects[3]->Edit_Button_Object(to_string(Score_4));
+				}
+				H_Game.Layers[1]->Physics_Objects[0]->Set_Velocity_Physics_Object(-Ball_Speed, 0.0, 0.0);
+			}
+			Last_Hit = 0;
+			x = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2);
+			y = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(3);
+			H_Game.Layers[1]->Physics_Objects[0]->Physics->Translate_Object(-x, -y, 0.0);
+			Paddle_Speed = Base_1;
+			Paddle_Speed_2 = Base_2;
+		}
+		if (Mode == 5){
+			if (Point == 1){
+				Score_1++;
+				H_Game.Layers[0]->Button_Objects[0]->Edit_Button_Object(to_string(Score_1));
+				H_Game.Layers[1]->Physics_Objects[0]->Set_Velocity_Physics_Object(-Ball_Speed, 0.0, 0.0);
+			}
+			if (Point == 2){
+				Score_2++;
+				H_Game.Layers[0]->Button_Objects[1]->Edit_Button_Object(to_string(Score_2));
+				H_Game.Layers[1]->Physics_Objects[0]->Set_Velocity_Physics_Object(Ball_Speed, 0.0, 0.0);
+			}
+			x = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2);
+			y = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(3);
+			H_Game.Layers[1]->Physics_Objects[0]->Physics->Translate_Object(-x, -y, 0.0);
+			Paddle_Speed = Base_1;
+			Paddle_Speed_2 = Base_2;
+		}
 	}
 }
 
@@ -530,6 +744,34 @@ int Game::Check_For_Point(){
 			return(2);
 		}
 		if (H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2) > 1){
+			return(1);
+		}
+	}
+	if (Mode == 4){
+		if (H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2) < -1){
+			return(1);
+		}
+		if (H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2) > 1){
+			return(1);
+		}
+		if (H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(3) < -1){
+			return(1);
+		}
+		if (H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(3) > 1){
+			return(1);
+		}
+	}
+	if (Mode == 5){
+		if (H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2) < -1){
+			return(2);
+		}
+		if (H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2) > 1){
+			return(1);
+		}
+		if (H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(3) < -1){
+			return(1);
+		}
+		if (H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(3) > 1){
 			return(1);
 		}
 	}
@@ -566,6 +808,30 @@ void Game::End_Screen(){
 		H_Game.Layers[0]->Button_Objects[2]->Translate_Button_Object(0.0, -0.2, 0.0);
 	}
 	if (Mode == 3){
+		if (Game_Good == 1){
+			H_Game.Layers[0]->Initilize_Object(4);
+			H_Game.Layers[0]->Button_Objects[0]->New_Button_Object("YOU WIN", "Textures/Buttons/Transparent", "Basic/White", 1.0, 0.5);
+			H_Game.Layers[0]->Button_Objects[0]->Translate_Button_Object(0.0, 0.5, 0.0);
+		}
+		else{
+			H_Game.Layers[0]->Initilize_Object(4);
+			H_Game.Layers[0]->Button_Objects[0]->New_Button_Object("YOU LOSE", "Textures/Buttons/Transparent", "Basic/White", 1.0, 0.5);
+			H_Game.Layers[0]->Button_Objects[0]->Translate_Button_Object(0.0, 0.5, 0.0);
+		}
+	}
+	if (Mode == 4){
+		if (Game_Good == 1){
+			H_Game.Layers[0]->Initilize_Object(4);
+			H_Game.Layers[0]->Button_Objects[0]->New_Button_Object("YOU WIN", "Textures/Buttons/Transparent", "Basic/White", 1.0, 0.5);
+			H_Game.Layers[0]->Button_Objects[0]->Translate_Button_Object(0.0, 0.5, 0.0);
+		}
+		else{
+			H_Game.Layers[0]->Initilize_Object(4);
+			H_Game.Layers[0]->Button_Objects[0]->New_Button_Object("YOU LOSE", "Textures/Buttons/Transparent", "Basic/White", 1.0, 0.5);
+			H_Game.Layers[0]->Button_Objects[0]->Translate_Button_Object(0.0, 0.5, 0.0);
+		}
+	}
+	if (Mode == 5){
 		if (Game_Good == 1){
 			H_Game.Layers[0]->Initilize_Object(4);
 			H_Game.Layers[0]->Button_Objects[0]->New_Button_Object("YOU WIN", "Textures/Buttons/Transparent", "Basic/White", 1.0, 0.5);
@@ -686,6 +952,116 @@ int Game::PowerUP(){
 	return(0);
 }
 int Game::Arena(){
-	cout << "D";
+	Score_1 = 0;
+	Score_2 = 0;
+	Score_3 = 0;
+	Score_4 = 0;
+	Paddle_Speed = 0.01;
+	Paddle_Speed_2 = 0.01;
+	Base_1 = 0.01;
+	Base_2 = 0.01;
+	Ball_Speed = 0.5;
+	H_Game.Layers[0]->Initilize_Object(4);
+	H_Game.Layers[0]->Button_Objects[0]->New_Button_Object(to_string(Score_1), "Textures/Buttons/Transparent", "Basic/White", 0.3, 0.3);
+	H_Game.Layers[0]->Button_Objects[0]->Translate_Button_Object(-0.7, 0.0, 0.0);
+	H_Game.Layers[0]->Initilize_Object(4);
+	H_Game.Layers[0]->Button_Objects[1]->New_Button_Object(to_string(Score_2), "Textures/Buttons/Transparent", "Basic/White", 0.3, 0.3);
+	H_Game.Layers[0]->Button_Objects[1]->Translate_Button_Object(0.7, 0.0, 0.0);
+	H_Game.Layers[0]->Initilize_Object(4);
+	H_Game.Layers[0]->Button_Objects[2]->New_Button_Object(to_string(Score_3), "Textures/Buttons/Transparent", "Basic/White", 0.3, 0.3);
+	H_Game.Layers[0]->Button_Objects[2]->Translate_Button_Object(0.0, 0.7, 0.0);
+	H_Game.Layers[0]->Initilize_Object(4);
+	H_Game.Layers[0]->Button_Objects[3]->New_Button_Object(to_string(Score_4), "Textures/Buttons/Transparent", "Basic/White", 0.3, 0.3);
+	H_Game.Layers[0]->Button_Objects[3]->Translate_Button_Object(0.0, -0.7, 0.0);
+	H_Game.Layers[1]->Initilize_Object(1);
+	H_Game.Layers[1]->Colored_Objects[0]->New_Colored_Object(4, 0.01, 0.1, 1.0, 1.0, 1.0, 1.0, 1);
+	H_Game.Layers[1]->Colored_Objects[0]->Translate_Object(-0.9, 0.0, 0.0);
+	H_Game.Layers[1]->Initilize_Object(1);
+	H_Game.Layers[1]->Colored_Objects[1]->New_Colored_Object(4, 0.01, 0.1, 1.0, 1.0, 1.0, 1.0, 1);
+	H_Game.Layers[1]->Colored_Objects[1]->Translate_Object(0.9, 0.0, 0.0);
+	H_Game.Layers[1]->Initilize_Object(1);
+	H_Game.Layers[1]->Colored_Objects[2]->New_Colored_Object(4, 0.1, 0.01, 1.0, 1.0, 1.0, 1.0, 1);
+	H_Game.Layers[1]->Colored_Objects[2]->Translate_Object(0.0, 0.9, 0.0);
+	H_Game.Layers[1]->Initilize_Object(1);
+	H_Game.Layers[1]->Colored_Objects[3]->New_Colored_Object(4, 0.1, 0.01, 1.0, 1.0, 1.0, 1.0, 1);
+	H_Game.Layers[1]->Colored_Objects[3]->Translate_Object(0.0, -0.9, 0.0);
+
+	H_Game.Layers[1]->Initilize_Object(1);
+	H_Game.Layers[1]->Colored_Objects[4]->New_Colored_Object(4, 0.01, 0.01, 1.0, 1.0, 1.0, 1.0, 1);
+	H_Game.Layers[1]->Colored_Objects[4]->Translate_Object(-0.9, 1.01, 0.0);
+	H_Game.Layers[1]->Initilize_Object(1);
+	H_Game.Layers[1]->Colored_Objects[5]->New_Colored_Object(4, 0.01, 0.01, 1.0, 1.0, 1.0, 1.0, 1);
+	H_Game.Layers[1]->Colored_Objects[5]->Translate_Object(-0.9, -1.01, 0.0);
+	H_Game.Layers[1]->Initilize_Object(1);
+	H_Game.Layers[1]->Colored_Objects[6]->New_Colored_Object(4, 0.01, 0.01, 1.0, 1.0, 1.0, 1.0, 1);
+	H_Game.Layers[1]->Colored_Objects[6]->Translate_Object(0.9, 1.01, 0.0);
+	H_Game.Layers[1]->Initilize_Object(1);
+	H_Game.Layers[1]->Colored_Objects[7]->New_Colored_Object(4, 00.1, 0.01, 1.0, 1.0, 1.0, 1.0, 1);
+	H_Game.Layers[1]->Colored_Objects[7]->Translate_Object(0.9, -1.01, 0.0);
+	H_Game.Layers[1]->Initilize_Object(1);
+	H_Game.Layers[1]->Colored_Objects[8]->New_Colored_Object(4, 0.01, 0.01, 1.0, 1.0, 1.0, 1.0, 1);
+	H_Game.Layers[1]->Colored_Objects[8]->Translate_Object(1.01, 0.9, 0.0);
+	H_Game.Layers[1]->Initilize_Object(1);
+	H_Game.Layers[1]->Colored_Objects[9]->New_Colored_Object(4, 0.01, 0.01, 1.0, 1.0, 1.0, 1.0, 1);
+	H_Game.Layers[1]->Colored_Objects[9]->Translate_Object(-1.01, 0.9, 0.0);
+	H_Game.Layers[1]->Initilize_Object(1);
+	H_Game.Layers[1]->Colored_Objects[10]->New_Colored_Object(4, 0.01, 0.01, 1.0, 1.0, 1.0, 1.0, 1);
+	H_Game.Layers[1]->Colored_Objects[10]->Translate_Object(1.01, -0.9, 0.0);
+	H_Game.Layers[1]->Initilize_Object(1);
+	H_Game.Layers[1]->Colored_Objects[11]->New_Colored_Object(4, 0.01, 0.01, 1.0, 1.0, 1.0, 1.0, 1);
+	H_Game.Layers[1]->Colored_Objects[11]->Translate_Object(-1.01, -0.9, 0.0);
+	return(0);
+}
+int Game::OneVAll(){
+	Score_1 = 0;
+	Score_2 = 0;
+	Paddle_Speed = 0.01;
+	Paddle_Speed_2 = 0.01;
+	Base_1 = 0.01;
+	Base_2 = 0.01;
+	Ball_Speed = 0.5;
+	H_Game.Layers[0]->Initilize_Object(4);
+	H_Game.Layers[0]->Button_Objects[0]->New_Button_Object(to_string(Score_1), "Textures/Buttons/Transparent", "Basic/White", 0.3, 0.3);
+	H_Game.Layers[0]->Button_Objects[0]->Translate_Button_Object(-0.7, 0.0, 0.0);
+	H_Game.Layers[0]->Initilize_Object(4);
+	H_Game.Layers[0]->Button_Objects[1]->New_Button_Object(to_string(Score_2), "Textures/Buttons/Transparent", "Basic/White", 0.3, 0.3);
+	H_Game.Layers[0]->Button_Objects[1]->Translate_Button_Object(0.7, 0.0, 0.0);
+	H_Game.Layers[1]->Initilize_Object(1);
+	H_Game.Layers[1]->Colored_Objects[0]->New_Colored_Object(4, 0.01, 0.1, 1.0, 1.0, 1.0, 1.0, 1);
+	H_Game.Layers[1]->Colored_Objects[0]->Translate_Object(-0.9, 0.0, 0.0);
+	H_Game.Layers[1]->Initilize_Object(1);
+	H_Game.Layers[1]->Colored_Objects[1]->New_Colored_Object(4, 0.01, 0.1, 1.0, 1.0, 1.0, 1.0, 1);
+	H_Game.Layers[1]->Colored_Objects[1]->Translate_Object(0.9, 0.0, 0.0);
+	H_Game.Layers[1]->Initilize_Object(1);
+	H_Game.Layers[1]->Colored_Objects[2]->New_Colored_Object(4, 0.1, 0.01, 1.0, 1.0, 1.0, 1.0, 1);
+	H_Game.Layers[1]->Colored_Objects[2]->Translate_Object(0.0, 0.9, 0.0);
+	H_Game.Layers[1]->Initilize_Object(1);
+	H_Game.Layers[1]->Colored_Objects[3]->New_Colored_Object(4, 0.1, 0.01, 1.0, 1.0, 1.0, 1.0, 1);
+	H_Game.Layers[1]->Colored_Objects[3]->Translate_Object(0.0, -0.9, 0.0);
+
+	H_Game.Layers[1]->Initilize_Object(1);
+	H_Game.Layers[1]->Colored_Objects[4]->New_Colored_Object(4, 0.01, 0.01, 1.0, 1.0, 1.0, 1.0, 1);
+	H_Game.Layers[1]->Colored_Objects[4]->Translate_Object(-0.9, 1.01, 0.0);
+	H_Game.Layers[1]->Initilize_Object(1);
+	H_Game.Layers[1]->Colored_Objects[5]->New_Colored_Object(4, 0.01, 0.01, 1.0, 1.0, 1.0, 1.0, 1);
+	H_Game.Layers[1]->Colored_Objects[5]->Translate_Object(-0.9, -1.01, 0.0);
+	H_Game.Layers[1]->Initilize_Object(1);
+	H_Game.Layers[1]->Colored_Objects[6]->New_Colored_Object(4, 0.01, 0.01, 1.0, 1.0, 1.0, 1.0, 1);
+	H_Game.Layers[1]->Colored_Objects[6]->Translate_Object(0.9, 1.01, 0.0);
+	H_Game.Layers[1]->Initilize_Object(1);
+	H_Game.Layers[1]->Colored_Objects[7]->New_Colored_Object(4, 00.1, 0.01, 1.0, 1.0, 1.0, 1.0, 1);
+	H_Game.Layers[1]->Colored_Objects[7]->Translate_Object(0.9, -1.01, 0.0);
+	H_Game.Layers[1]->Initilize_Object(1);
+	H_Game.Layers[1]->Colored_Objects[8]->New_Colored_Object(4, 0.01, 0.01, 1.0, 1.0, 1.0, 1.0, 1);
+	H_Game.Layers[1]->Colored_Objects[8]->Translate_Object(1.01, 0.9, 0.0);
+	H_Game.Layers[1]->Initilize_Object(1);
+	H_Game.Layers[1]->Colored_Objects[9]->New_Colored_Object(4, 0.01, 0.01, 1.0, 1.0, 1.0, 1.0, 1);
+	H_Game.Layers[1]->Colored_Objects[9]->Translate_Object(-1.01, 0.9, 0.0);
+	H_Game.Layers[1]->Initilize_Object(1);
+	H_Game.Layers[1]->Colored_Objects[10]->New_Colored_Object(4, 0.01, 0.01, 1.0, 1.0, 1.0, 1.0, 1);
+	H_Game.Layers[1]->Colored_Objects[10]->Translate_Object(1.01, -0.9, 0.0);
+	H_Game.Layers[1]->Initilize_Object(1);
+	H_Game.Layers[1]->Colored_Objects[11]->New_Colored_Object(4, 0.01, 0.01, 1.0, 1.0, 1.0, 1.0, 1);
+	H_Game.Layers[1]->Colored_Objects[11]->Translate_Object(-1.01, -0.9, 0.0);
 	return(0);
 }

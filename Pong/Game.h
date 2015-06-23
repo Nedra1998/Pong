@@ -10,13 +10,16 @@ private:
 	int Timed();
 	int PowerUP();
 	int Arena();
+	int OneVAll();
 	int Check_For_Point();
 	void End_Screen();
+	bool Close();
 	int Mode, Difficulty;
 	int Game_Good;
-	int Score_1, Score_2, Point;
+	int Score_1, Score_2, Score_3, Score_4, Point;
 	int Minutes, Seconds;
 	int Collision = 0, Total = 0;
+	int Last_Hit;
 	time_t Start, End;
 	struct Power_Up
 	{

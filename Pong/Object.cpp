@@ -1218,7 +1218,7 @@ int Object::Run_Physics(){
 	}
 	Velocity_X = Velocity_X + (Acceleration_X * Tic);
 	Velocity_Y = Velocity_Y + (Acceleration_Y * Tic);
-	if (Final != -1){
+	if (Final != -1 || Return != -1){
 		return(1);
 	}
 }
