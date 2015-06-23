@@ -400,7 +400,7 @@ void Game::Every_Turn(){
 				}
 			}
 			if (rand() % 2 == 0){
-				int power = (rand() % 1) + 5;
+				int power = (rand() % 6);
 				float x, y;
 				string Name = "Textures/Game/";
 				Power_Up temp;
