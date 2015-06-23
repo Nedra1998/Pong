@@ -8,7 +8,7 @@ private:
 
 	int Classic();
 	int Timed();
-	int Special();
+	int PowerUP();
 	int Arena();
 	int Check_For_Point();
 	void End_Screen();
@@ -20,11 +20,15 @@ private:
 	time_t Start, End;
 	struct Power_Up
 	{
+		bool Active;
+		bool Left;
 		int Life;
 		int Power;
 		int Index;
 	};
+	vector<Power_Up> Pick_Ups;
 	vector<Power_Up> Power_Ups;
+	bool BL, BS, BP, PL, PS, PP;
 	float Paddle_Speed, Paddle_Speed_2, Ball_Speed;
 	float Base_1, Base_2;
 public:

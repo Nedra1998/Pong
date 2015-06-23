@@ -77,7 +77,7 @@ void Game::Run_Game_Program(int mode, Hephaestus H, GLFWwindow* W, bool Mouse, i
 		if (Collision == 1){
 			Paddle_Speed = Paddle_Speed + (Paddle_Speed * .05);
 			Paddle_Speed_2 = Paddle_Speed_2 + (Paddle_Speed_2 * .05);
-			float  Y_Paddle, Y_Ball, VY, VX;
+			float  Y_Paddle = 0.0, Y_Ball, VY, VX;
 			Collision = 0;
 			Y_Ball = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(3);
 			if (H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2) > 0){
@@ -141,7 +141,7 @@ void Game::Pre_Game(){
 		time(&Start);
 	}
 	if (Mode == 3){
-		Special();
+		PowerUP();
 		H_Game.Layers[1]->Physics_Objects[0]->Set_Collsion_Objects(H_Game.Layers[1]->Colored_Objects, 0, -1);
 		H_Game.Layers[1]->Colored_Objects[0]->Set_Collision_Set(H_Game.Layers[1]->Physics_Objects, 0, -1);
 		H_Game.Layers[1]->Colored_Objects[1]->Set_Collision_Set(H_Game.Layers[1]->Physics_Objects, 0, -1);
@@ -200,68 +200,242 @@ void Game::Every_Turn(){
 		int Last = Seconds;
 		time(&End);
 		Seconds = Seconds + End - Start;
-		int Size = Power_Ups.size();
-		cout << Size << endl;
-		if (Seconds != Last){
-			for (unsigned i = 0; i < Size; i++){
-				Power_Ups[i].Life--;
-				if (i == 0){
-					//cout << Power_Ups[i].Life << endl;
+		time(&Start);
+		float XB, YB, XP, YP;
+		XB = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2);
+		YB = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(3);
+		for (unsigned a = 0; a < Pick_Ups.size(); a++){
+			XP = H_Game.Layers[2]->Textured_Objects[Pick_Ups[a].Index]->Return_Float_Value(2);
+			YP = H_Game.Layers[2]->Textured_Objects[Pick_Ups[a].Index]->Return_Float_Value(3);
+			if (XB < XP + 0.05 && XB > XP - 0.05 && YB < YP + 0.05 && YB > YP - 0.05){
+				Pick_Ups[a].Life = 10;
+				H_Game.Layers[2]->Textured_Objects.erase(H_Game.Layers[2]->Textured_Objects.begin() + Pick_Ups[a].Index);
+				Power_Ups.push_back(Pick_Ups[a]);
+				Pick_Ups.erase(Pick_Ups.begin() + a);
+				for (unsigned b = a; b < Pick_Ups.size(); b++){
+					Pick_Ups[b].Index--;
 				}
-				if (Power_Ups[i].Life == 0){
-					if (i == 0){
-						cout << "-----\n";
-					}
-					Size--;
-					cout << "A";
-					H_Game.Layers[2]->Textured_Objects.erase(H_Game.Layers[2]->Textured_Objects.begin(), H_Game.Layers[2]->Textured_Objects.begin()+Power_Ups[i].Index + 1);
-					Power_Ups.erase(Power_Ups.begin(), Power_Ups.begin() + i);
-					cout << "B";
-					for (int a = i; a < Power_Ups.size(); a++){
-						Power_Ups[a].Index--;
-					}
-					cout << "C\n";
-				}
-			}
-			int Spawn = (10 / (Paddle_Speed * 50));
-			if (Spawn > 15){
-				Spawn = 15;
-			}
-			if ((rand() % Spawn) == 0 && Size < 5){
-				int Power = (rand() % 6);
-				float x, y = 0.0;
-				x = (float)(rand() % 160) / (float)(100);
-				x = x - 1;
-				y = (float)(rand() % 200) / (float)(100);
-				y = y - 1;
-				Power_Up power_up;
-				power_up.Power = Power;
-				power_up.Life = 5;
-				power_up.Index = H_Game.Layers[2]->Textured_Objects.size();
-				H_Game.Layers[2]->Initilize_Object(2);
-				Power_Ups.push_back(power_up);
-				if (Power == 0){
-					H_Game.Layers[2]->Textured_Objects[power_up.Index]->New_Textured_Object("Textures/Game/Larger Ball", 4, 0.05, 0.05, 0);
-				}
-				if (Power == 1){
-					H_Game.Layers[2]->Textured_Objects[power_up.Index]->New_Textured_Object("Textures/Game/Smaller Ball", 4, 0.05, 0.05, 0);
-				}
-				if (Power == 2){
-					H_Game.Layers[2]->Textured_Objects[power_up.Index]->New_Textured_Object("Textures/Game/Larger Paddle", 4, 0.05, 0.05, 0);
-				}
-				if (Power == 3){
-					H_Game.Layers[2]->Textured_Objects[power_up.Index]->New_Textured_Object("Textures/Game/Smaller Paddle", 4, 0.05, 0.05, 0);
-				}
-				if (Power == 4){
-					H_Game.Layers[2]->Textured_Objects[power_up.Index]->New_Textured_Object("Textures/Game/Super Ball", 4, 0.05, 0.05, 0);
-				}
-				if (Power == 5){
-					H_Game.Layers[2]->Textured_Objects[power_up.Index]->New_Textured_Object("Textures/Game/Super Paddle", 4, 0.05, 0.05, 0);
-				}
-				H_Game.Layers[2]->Textured_Objects[power_up.Index]->Translate_Object(x, y, 0.0);
 			}
 		}
-		time(&Start);
+
+		for (unsigned a = 0; a < Power_Ups.size(); a++){
+			if (Power_Ups[a].Power == 0 && Power_Ups[a].Active == false){
+				Power_Ups[a].Active = true;
+				float x, y, xp, yp;
+				x = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(4);
+				xp = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2);
+				x = x * 2;
+				y = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(5);
+				yp = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(3);
+				y = y * 2;
+				H_Game.Layers[1]->Physics_Objects[0]->Translate_Physics_Object(-xp, -yp, 0.0);
+				H_Game.Layers[1]->Physics_Objects[0]->Physics->New_Colored_Object(4, x, y, 1.0, 1.0, 1.0, 1.0, 1);
+				H_Game.Layers[1]->Physics_Objects[0]->Translate_Physics_Object(xp, yp, 0.0);
+			}
+			if (Power_Ups[a].Power == 1 && Power_Ups[a].Active == false){
+				Power_Ups[a].Active = true;
+				float x, y, xp, yp;
+				x = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(4);
+				xp = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2);
+				x = x / 2;
+				y = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(5);
+				yp = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(3);
+				y = y / 2;
+				H_Game.Layers[1]->Physics_Objects[0]->Translate_Physics_Object(-xp, -yp, 0.0);
+				H_Game.Layers[1]->Physics_Objects[0]->Physics->New_Colored_Object(4, x, y, 1.0, 1.0, 1.0, 1.0, 1);
+				H_Game.Layers[1]->Physics_Objects[0]->Translate_Physics_Object(xp, yp, 0.0);
+			}
+			if (Power_Ups[a].Power == 2 && Power_Ups[a].Active == false){
+				Power_Ups[a].Active = true;
+				if (H_Game.Layers[1]->Physics_Objects[0]->Return_Physics_Data(1) < 0){
+					Power_Ups[a].Left = false;
+				}
+				else{
+					Power_Ups[a].Left = true;
+				}
+				float y, xp, yp;
+				int Object = 0;
+				if (Power_Ups[a].Left == false){
+					Object = 1;
+				}
+				xp = H_Game.Layers[1]->Colored_Objects[Object]->Return_Float_Value(2);
+				y = H_Game.Layers[1]->Colored_Objects[Object]->Return_Float_Value(5);
+				yp = H_Game.Layers[1]->Colored_Objects[Object]->Return_Float_Value(3);
+				y = y * 1.5;
+				H_Game.Layers[1]->Colored_Objects[Object]->Translate_Object(-xp, -yp, 0.0);
+				H_Game.Layers[1]->Colored_Objects[Object]->New_Colored_Object(4, 0.01, y, 1.0, 1.0, 1.0, 1.0, 1);
+				H_Game.Layers[1]->Colored_Objects[Object]->Translate_Object(xp, yp, 0.0);
+			}
+			if (Power_Ups[a].Power == 3 && Power_Ups[a].Active == false){
+				Power_Ups[a].Active = true;
+				if (H_Game.Layers[1]->Physics_Objects[0]->Return_Physics_Data(1) < 0){
+					Power_Ups[a].Left = false;
+				}
+				else{
+					Power_Ups[a].Left = true;
+				}
+				float y, xp, yp;
+				int Object = 0;
+				if (Power_Ups[a].Left == false){
+					Object = 1;
+				}
+				xp = H_Game.Layers[1]->Colored_Objects[Object]->Return_Float_Value(2);
+				y = H_Game.Layers[1]->Colored_Objects[Object]->Return_Float_Value(5);
+				yp = H_Game.Layers[1]->Colored_Objects[Object]->Return_Float_Value(3);
+				y = y / 1.5;
+				H_Game.Layers[1]->Colored_Objects[Object]->Translate_Object(-xp, -yp, 0.0);
+				H_Game.Layers[1]->Colored_Objects[Object]->New_Colored_Object(4, 0.01, y, 1.0, 1.0, 1.0, 1.0, 1);
+				H_Game.Layers[1]->Colored_Objects[Object]->Translate_Object(xp, yp, 0.0);
+			}
+			if (Power_Ups[a].Power == 4 && Power_Ups[a].Active == false){
+				Power_Ups[a].Active = true;
+				float vx, vy;
+				vx = H_Game.Layers[1]->Physics_Objects[0]->Return_Physics_Data(1);
+				vy = H_Game.Layers[1]->Physics_Objects[0]->Return_Physics_Data(2);
+				vx = vx / 2;
+				vy = vy / 2;
+				H_Game.Layers[1]->Physics_Objects[0]->Add_Velocity_Physics_Object(vx, vy, 0.0);
+				vx = H_Game.Layers[1]->Physics_Objects[0]->Return_Physics_Data(1);
+				vy = H_Game.Layers[1]->Physics_Objects[0]->Return_Physics_Data(2);
+			}
+			if (Power_Ups[a].Power == 5 && Power_Ups[a].Active == false){
+				Power_Ups[a].Active = true;
+				if (H_Game.Layers[1]->Physics_Objects[0]->Return_Physics_Data(1) < 0){
+					Power_Ups[a].Left = false;
+				}
+				else{
+					Power_Ups[a].Left = true;
+				}
+				if (Power_Ups[a].Left == false){
+					Paddle_Speed_2 = Paddle_Speed_2 * 1.5;
+				}
+				if (Power_Ups[a].Left == true){
+					Paddle_Speed = Paddle_Speed * 1.5;
+				}
+			}
+		}
+		if (Seconds != Last){
+			for (unsigned a = 0; a <  Pick_Ups.size(); a++){
+				Pick_Ups[a].Life--;
+				if (Pick_Ups[a].Life == 0){
+					H_Game.Layers[2]->Textured_Objects.erase(H_Game.Layers[2]->Textured_Objects.begin() + Pick_Ups[a].Index);
+					Pick_Ups.erase(Pick_Ups.begin() + a);
+					for (unsigned b = a; b < Pick_Ups.size(); b++){
+						Pick_Ups[b].Index--;
+					}
+				}
+			}
+			for (unsigned a = 0; a < Power_Ups.size(); a++){
+				Power_Ups[a].Life--;
+				if (Power_Ups[a].Life == 0){
+					if (Power_Ups[a].Power == 0){
+						float x, y, xp, yp;
+						x = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(4);
+						xp = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2);
+						x = x / 2;
+						y = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(5);
+						yp = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(3);
+						y = y / 2;
+						H_Game.Layers[1]->Physics_Objects[0]->Translate_Physics_Object(-xp, -yp, 0.0);
+						H_Game.Layers[1]->Physics_Objects[0]->Physics->New_Colored_Object(4, x, y, 1.0, 1.0, 1.0, 1.0, 1);
+						H_Game.Layers[1]->Physics_Objects[0]->Translate_Physics_Object(xp, yp, 0.0);
+					}
+					if (Power_Ups[a].Power == 1){
+						float x, y, xp, yp;
+						x = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(4);
+						xp = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2);
+						x = x * 2;
+						y = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(5);
+						yp = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(3);
+						y = y * 2;
+						H_Game.Layers[1]->Physics_Objects[0]->Translate_Physics_Object(-xp, -yp, 0.0);
+						H_Game.Layers[1]->Physics_Objects[0]->Physics->New_Colored_Object(4, x, y, 1.0, 1.0, 1.0, 1.0, 1);
+						H_Game.Layers[1]->Physics_Objects[0]->Translate_Physics_Object(xp, yp, 0.0);
+					}
+					if (Power_Ups[a].Power == 2){
+						float y, xp, yp;
+						int Object = 0;
+						if (Power_Ups[a].Left == false){
+							Object = 1;
+						}
+						xp = H_Game.Layers[1]->Colored_Objects[Object]->Return_Float_Value(2);
+						y = H_Game.Layers[1]->Colored_Objects[Object]->Return_Float_Value(5);
+						yp = H_Game.Layers[1]->Colored_Objects[Object]->Return_Float_Value(3);
+						y = y / 1.5;
+						H_Game.Layers[1]->Colored_Objects[Object]->Translate_Object(-xp, -yp, 0.0);
+						H_Game.Layers[1]->Colored_Objects[Object]->New_Colored_Object(4, 0.01, y, 1.0, 1.0, 1.0, 1.0, 1);
+						H_Game.Layers[1]->Colored_Objects[Object]->Translate_Object(xp, yp, 0.0);
+					}
+					if (Power_Ups[a].Power == 3){
+						float y, xp, yp;
+						int Object = 0;
+						if (Power_Ups[a].Left == false){
+							Object = 1;
+						}
+						xp = H_Game.Layers[1]->Colored_Objects[Object]->Return_Float_Value(2);
+						y = H_Game.Layers[1]->Colored_Objects[Object]->Return_Float_Value(5);
+						yp = H_Game.Layers[1]->Colored_Objects[Object]->Return_Float_Value(3);
+						y = y * 1.5;
+						H_Game.Layers[1]->Colored_Objects[Object]->Translate_Object(-xp, -yp, 0.0);
+						H_Game.Layers[1]->Colored_Objects[Object]->New_Colored_Object(4, 0.01, y, 1.0, 1.0, 1.0, 1.0, 1);
+						H_Game.Layers[1]->Colored_Objects[Object]->Translate_Object(xp, yp, 0.0);
+					}
+					if (Power_Ups[a].Power == 4){
+						float vx, vy;
+						vx = H_Game.Layers[1]->Physics_Objects[0]->Return_Physics_Data(1);
+						vy = H_Game.Layers[1]->Physics_Objects[0]->Return_Physics_Data(2);
+						vx = vx / 2;
+						vy = vy / 2;
+						H_Game.Layers[1]->Physics_Objects[0]->Add_Velocity_Physics_Object(-vx, -vy, 0.0);
+					}
+					if (Power_Ups[a].Power == 5){
+						if (Power_Ups[a].Left == false){
+							Paddle_Speed_2 = Paddle_Speed_2 / 1.5;
+						}
+						if (Power_Ups[a].Left == true){
+							Paddle_Speed = Paddle_Speed / 1.5;
+						}
+					}
+					Power_Ups.erase(Power_Ups.begin() + a);
+				}
+			}
+			if (rand() % 2 == 0){
+				int power = (rand() % 1) + 5;
+				float x, y;
+				string Name = "Textures/Game/";
+				Power_Up temp;
+				x = (float)(rand() % 150) / (float)(100);
+				x = x - 0.75;
+				y = (float)(rand() % 150) / (float)(100);
+				y = y - 0.75;
+				temp.Power = power;
+				temp.Active = false;
+				temp.Life = 10;
+				if (power == 0){
+					Name = Name + "Larger Ball";
+				}
+				if (power == 1){
+					Name = Name + "Smaller Ball";
+				}
+				if (power == 2){
+					Name = Name + "Larger Paddle";
+				}
+				if (power == 3){
+					Name = Name + "Smaller Paddle";
+				}
+				if (power == 4){
+					Name = Name + "Super Ball";
+				}
+				if (power == 5){
+					Name = Name + "Super Paddle";
+				}
+				temp.Index = H_Game.Layers[2]->Textured_Objects.size();
+				Pick_Ups.push_back(temp);
+				H_Game.Layers[2]->Initilize_Object(2);
+				H_Game.Layers[2]->Textured_Objects[temp.Index]->New_Textured_Object(Name, 4, 0.05, 0.05, 0);
+				H_Game.Layers[2]->Textured_Objects[temp.Index]->Translate_Object(x, y, 0.0);
+			}
+		}
 	}
 }
 void Game::Score(){
@@ -314,6 +488,13 @@ void Game::Score(){
 			H_Game.Layers[1]->Physics_Objects[0]->Physics->Translate_Object(-x, -y, 0.0);
 			Paddle_Speed = Base_1;
 			Paddle_Speed_2 = Base_2;
+			for (unsigned a = 0; a < Pick_Ups.size(); a++){
+				H_Game.Layers[2]->Textured_Objects.erase(H_Game.Layers[2]->Textured_Objects.begin() + Pick_Ups[a].Index);
+				Pick_Ups.erase(Pick_Ups.begin() + a);
+				for (int b = a; b < Pick_Ups.size(); b++){
+					Pick_Ups[b].Index--;
+				}
+			}
 			for (unsigned a = 0; a < Power_Ups.size(); a++){
 				Power_Ups[a].Life = 1;
 			}
@@ -456,7 +637,7 @@ int Game::Timed(){
 	H_Game.Layers[1]->Colored_Objects[3]->Translate_Object(0.0, -1.1, 0.0);
 	return(0);
 }
-int Game::Special(){
+int Game::PowerUP(){
 	Score_1 = 0;
 	Score_2 = 0;
 	Paddle_Speed = 0.01;

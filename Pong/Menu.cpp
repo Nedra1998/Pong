@@ -220,10 +220,10 @@ void Menu::Single_Player_Menu_1(){
 	H_Menu.Layers[1]->Button_Objects[1]->New_Button_Object("/Timed/", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
 	H_Menu.Layers[1]->Button_Objects[1]->Translate_Button_Object(0.0, 0.0, 0.0);
 	H_Menu.Layers[1]->Initilize_Object(4);
-	H_Menu.Layers[1]->Button_Objects[2]->New_Button_Object("/Special/", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
+	H_Menu.Layers[1]->Button_Objects[2]->New_Button_Object("/Power Up/", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
 	H_Menu.Layers[1]->Button_Objects[2]->Translate_Button_Object(0.0, -0.2, 0.0);
 	H_Menu.Layers[1]->Initilize_Object(4);
-	H_Menu.Layers[1]->Button_Objects[3]->New_Button_Object("/Arena/", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
+	H_Menu.Layers[1]->Button_Objects[3]->New_Button_Object("SID/Arena/SID", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
 	H_Menu.Layers[1]->Button_Objects[3]->Translate_Button_Object(0.0, -0.4, 0.0);
 	H_Menu.Layers[1]->Initilize_Object(4);
 	H_Menu.Layers[1]->Button_Objects[4]->New_Button_Object("/Back/", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
@@ -274,10 +274,10 @@ void Menu::Multi_Player_Menu_2(){
 	H_Menu.Layers[0]->Button_Objects[0]->Translate_Button_Object(0.0, 0.7, 0.0);
 	H_Menu.Create_New_Layer();
 	H_Menu.Layers[1]->Initilize_Object(4);
-	H_Menu.Layers[1]->Button_Objects[0]->New_Button_Object("/Classic/", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
+	H_Menu.Layers[1]->Button_Objects[0]->New_Button_Object("SID/Classic/SID", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
 	H_Menu.Layers[1]->Button_Objects[0]->Translate_Button_Object(0.0, 0.2, 0.0);
 	H_Menu.Layers[1]->Initilize_Object(4);
-	H_Menu.Layers[1]->Button_Objects[1]->New_Button_Object("/Special/", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
+	H_Menu.Layers[1]->Button_Objects[1]->New_Button_Object("SID/Special/SID", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
 	H_Menu.Layers[1]->Button_Objects[1]->Translate_Button_Object(0.0, 0.0, 0.0);
 	H_Menu.Layers[1]->Initilize_Object(4);
 	H_Menu.Layers[1]->Button_Objects[2]->New_Button_Object("/Back/", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
