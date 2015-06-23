@@ -137,7 +137,7 @@ public:
 	void Reset_Physics_Data(int Type);
 	void Display_Physics_Object();
 	void Set_Collsion_Objects(vector<Object*> Collisions, int Start, int Ignore);
-	int Run_Physics();
+	int Run_Physics(int Mode);
 	float Return_Physics_Data(int Value);
 
 };

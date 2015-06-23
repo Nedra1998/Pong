@@ -1194,7 +1194,7 @@ void Object::Set_Collsion_Objects(vector<Object*> Collisions, int Start, int Ign
 	}
 	Physics->Set_Collision_Set(Collisions, Start, Ignore);
 }
-int Object::Run_Physics(){
+int Object::Run_Physics(int Mode){
 	int Return = -3, Final;
 	float Distance_X, Distance_Y, Tic = (float)1/(float)60;
 	Distance_X = (Velocity_X *Tic) + (0.5 * Acceleration_X * (Tic * Tic));
@@ -1218,9 +1218,17 @@ int Object::Run_Physics(){
 	}
 	Velocity_X = Velocity_X + (Acceleration_X * Tic);
 	Velocity_Y = Velocity_Y + (Acceleration_Y * Tic);
-	if (Final != -1 || Return != -1){
-		return(1);
+	if (Mode == 1){
+		if (Final != -1){
+			return(1);
+		}
 	}
+	if (Mode == 2){
+		if (Final != -1 || Return != -1){
+			return(1);
+		}
+	}
+	return(0);
 }
 float Object::Return_Physics_Data(int Value){
 	if (Value == 1){

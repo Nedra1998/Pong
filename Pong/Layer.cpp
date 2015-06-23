@@ -80,10 +80,10 @@ void Layer::Run_All_Particals(){
 		Partical_Objects[i]->Run_Particals();
 	}
 }
-int Layer::Run_All_Physics(){
+int Layer::Run_All_Physics(int Mode){
 	int Return = 0;
 	for (unsigned i = 0; i < Physics_Objects.size(); i++){
-		Return = Physics_Objects[i]->Run_Physics();
+		Return = Physics_Objects[i]->Run_Physics(Mode);
 	}
 	return(Return);
 }

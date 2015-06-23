@@ -210,10 +210,10 @@ void Menu::Main_Menu(){
 	H_Menu.Layers[1]->Button_Objects[0]->New_Button_Object("/Single Player/", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
 	H_Menu.Layers[1]->Button_Objects[0]->Translate_Button_Object(0.0, 0.2, 0.0);
 	H_Menu.Layers[1]->Initilize_Object(4);
-	H_Menu.Layers[1]->Button_Objects[1]->New_Button_Object("/Multi Player/", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
+	H_Menu.Layers[1]->Button_Objects[1]->New_Button_Object("ID/Multi Player/ID", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
 	H_Menu.Layers[1]->Button_Objects[1]->Translate_Button_Object(0.0, 0.0, 0.0);
 	H_Menu.Layers[1]->Initilize_Object(4);
-	H_Menu.Layers[1]->Button_Objects[2]->New_Button_Object("/High Scores/", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
+	H_Menu.Layers[1]->Button_Objects[2]->New_Button_Object("ID/High Scores/ID", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
 	H_Menu.Layers[1]->Button_Objects[2]->Translate_Button_Object(0.0, -0.2, 0.0);
 	H_Menu.Layers[1]->Initilize_Object(4);
 	H_Menu.Layers[1]->Button_Objects[3]->New_Button_Object("/Settings/", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);

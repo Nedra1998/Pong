@@ -76,7 +76,12 @@ void Game::Run_Game_Program(int mode, Hephaestus H, GLFWwindow* W, bool Mouse, i
 		}
 
 		Score();
-		Collision = H_Game.Layers[1]->Run_All_Physics();
+		if (Mode != 4 && Mode != 5){
+			Collision = H_Game.Layers[1]->Run_All_Physics(1);
+		}
+		else{
+			Collision = H_Game.Layers[1]->Run_All_Physics(2);
+		}
 		if (Collision == 1){
 			Paddle_Speed = Paddle_Speed + (Paddle_Speed * .05);
 			Paddle_Speed_2 = Paddle_Speed_2 + (Paddle_Speed_2 * .05);
@@ -550,6 +555,7 @@ void Game::Every_Turn(){
 		}
 		float paddle, ball, Distance;
 		paddle = H_Game.Layers[1]->Colored_Objects[2]->Return_Float_Value(2);
+		paddle = paddle - 0.01;
 		ball = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2);
 		if (paddle > ball + 0.005){
 			Distance = (paddle - ball);
