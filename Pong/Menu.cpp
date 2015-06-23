@@ -144,18 +144,6 @@ void Menu::Run_Menu_Program(Hephaestus H, GLFWwindow* W){
 						H_Menu.Win.Set_Window(i, f);
 						Load = 4;
 					}
-					if (Button == 1){
-						int i = H_Menu.Win.Get_Window_Size(1);
-						int f = H_Menu.Win.Get_Window_Size(2);
-						if (f == 1){
-							f = 0;
-						}
-						else{
-							f = 1;
-						}
-						H_Menu.Win.Set_Window(i, f);
-						Load = 4;
-					}
 					if (Button == 2 && Control == 0){
 						Control = 1;
 						ofstream Save("Game Data.txt");
