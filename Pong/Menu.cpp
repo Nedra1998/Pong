@@ -46,6 +46,12 @@ void Menu::Run_Menu_Program(Hephaestus H, GLFWwindow* W){
 			Delay = 10;
 		}
 		if (Load >= 10){
+			if (Control == 1){
+				Mouse = true;
+			}
+			else{
+				Mouse = false;
+			}
 			G_Menu.Run_Game_Program(Load - 9, H_Menu, W_Menu, Mouse, Difficulty);
 			Load = 1;
 			Stage = 1;
@@ -109,7 +115,7 @@ void Menu::Run_Menu_Program(Hephaestus H, GLFWwindow* W){
 					}
 				}
 				else if (Stage == 4){
-					if (Button == 2){
+					if (Button == 4){
 						Load = 1;
 					}
 					if (Button == 0){
@@ -132,6 +138,36 @@ void Menu::Run_Menu_Program(Hephaestus H, GLFWwindow* W){
 							f = 1;
 						}
 						H_Menu.Win.Set_Window(i, f);
+						Load = 4;
+					}
+					if (Button == 1){
+						int i = H_Menu.Win.Get_Window_Size(1);
+						int f = H_Menu.Win.Get_Window_Size(2);
+						if (f == 1){
+							f = 0;
+						}
+						else{
+							f = 1;
+						}
+						H_Menu.Win.Set_Window(i, f);
+						Load = 4;
+					}
+					if (Button == 2 && Control == 0){
+						Control = 1;
+						ofstream Save("Game Data.txt");
+						if (Save.is_open()){
+							Save << Control;
+							Save.close();
+						}
+						Load = 4;
+					}
+					if (Button == 3 && Control == 1){
+						Control = 0;
+						ofstream Save("Game Data.txt");
+						if (Save.is_open()){
+							Save << Control;
+							Save.close();
+						}
 						Load = 4;
 					}
 				}
@@ -185,6 +221,11 @@ void Menu::Main_Menu(){
 }
 void Menu::Settings_Menu(){
 	int x, y;
+	ifstream Load("Game Data.txt");
+	if (Load.is_open()){
+		Load >> Control;
+		Load.close();
+	}
 	H_Menu.Layers[0]->Initilize_Object(4);
 	H_Menu.Layers[0]->Button_Objects[0]->New_Button_Object("SETTINGS", "Textures/Buttons/Transparent", "Basic/White", 1.0, 0.5);
 	H_Menu.Layers[0]->Button_Objects[0]->Translate_Button_Object(0.0, 0.6, 0.0);
@@ -205,8 +246,24 @@ void Menu::Settings_Menu(){
 	}
 	H_Menu.Layers[1]->Button_Objects[1]->Translate_Button_Object(0.0, -0.2, 0.0);
 	H_Menu.Layers[1]->Initilize_Object(4);
-	H_Menu.Layers[1]->Button_Objects[2]->New_Button_Object("BACK", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
-	H_Menu.Layers[1]->Button_Objects[2]->Translate_Button_Object(0.0, -0.4, 0.0);
+	if (Control == 1){
+		H_Menu.Layers[1]->Button_Objects[2]->New_Button_Object("", "Textures/Buttons/MouseS 1", "Basic/White", 0.1, .1);
+	}
+	else{
+		H_Menu.Layers[1]->Button_Objects[2]->New_Button_Object("", "Textures/Buttons/MouseN", "Basic/White", 0.1, .1);
+	}
+	H_Menu.Layers[1]->Button_Objects[2]->Translate_Button_Object(-0.2, -0.4, 0.0);
+	H_Menu.Layers[1]->Initilize_Object(4);
+	if (Control == 1){
+		H_Menu.Layers[1]->Button_Objects[3]->New_Button_Object("", "Textures/Buttons/KeyN", "Basic/White", 0.1, .1);
+	}
+	else{
+		H_Menu.Layers[1]->Button_Objects[3]->New_Button_Object("", "Textures/Buttons/KeyS 1", "Basic/White", 0.1, .1);
+	}
+	H_Menu.Layers[1]->Button_Objects[3]->Translate_Button_Object(0.2, -0.4, 0.0);
+	H_Menu.Layers[1]->Initilize_Object(4);
+	H_Menu.Layers[1]->Button_Objects[4]->New_Button_Object("BACK", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
+	H_Menu.Layers[1]->Button_Objects[4]->Translate_Button_Object(0.0, -0.6, 0.0);
 }
 void Menu::Single_Player_Menu_1(){
 	H_Menu.Layers[0]->Initilize_Object(4);

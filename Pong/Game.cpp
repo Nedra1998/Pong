@@ -496,7 +496,13 @@ void Game::Score(){
 				}
 			}
 			for (unsigned a = 0; a < Power_Ups.size(); a++){
-				Power_Ups[a].Life = 1;
+				if (Power_Ups[a].Power == 4 || Power_Ups[a].Power == 5){
+					Power_Ups.erase(Power_Ups.begin() + a);
+					a--;
+				}
+				else{
+					Power_Ups[a].Life = 1;
+				}
 			}
 		}
 	}
@@ -558,6 +564,18 @@ void Game::End_Screen(){
 		H_Game.Layers[0]->Initilize_Object(4);
 		H_Game.Layers[0]->Button_Objects[2]->New_Button_Object(to_string(Score_1), "Textures/Buttons/Transparent", "Basic/White", 0.5, 0.2);
 		H_Game.Layers[0]->Button_Objects[2]->Translate_Button_Object(0.0, -0.2, 0.0);
+	}
+	if (Mode == 3){
+		if (Game_Good == 1){
+			H_Game.Layers[0]->Initilize_Object(4);
+			H_Game.Layers[0]->Button_Objects[0]->New_Button_Object("YOU WIN", "Textures/Buttons/Transparent", "Basic/White", 1.0, 0.5);
+			H_Game.Layers[0]->Button_Objects[0]->Translate_Button_Object(0.0, 0.5, 0.0);
+		}
+		else{
+			H_Game.Layers[0]->Initilize_Object(4);
+			H_Game.Layers[0]->Button_Objects[0]->New_Button_Object("YOU LOSE", "Textures/Buttons/Transparent", "Basic/White", 1.0, 0.5);
+			H_Game.Layers[0]->Button_Objects[0]->Translate_Button_Object(0.0, 0.5, 0.0);
+		}
 	}
 	while (Game_Good != 0){
 		if (Delay > 0){

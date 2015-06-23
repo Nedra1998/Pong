@@ -10,7 +10,7 @@ private:
 	void Single_Player_Menu_2();
 	void Multi_Player_Menu_1();
 	void Multi_Player_Menu_2();
-	int Mode, Difficulty;
+	int Mode, Difficulty, Control;
 	bool Mouse;
 public:
 	Hephaestus H_Menu;
