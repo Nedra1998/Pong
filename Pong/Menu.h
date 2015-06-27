@@ -8,8 +8,7 @@ private:
 	void Settings_Menu();
 	void Single_Player_Menu_1();
 	void Single_Player_Menu_2();
-	void Multi_Player_Menu_1();
-	void Multi_Player_Menu_2();
+	void Multi_Player_Menu();
 	int Mode, Difficulty, Control;
 	bool Mouse;
 public:

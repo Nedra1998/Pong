@@ -3,7 +3,7 @@
 #include "Hephaestus.h"
 #include "Game.h"
 using namespace std;
-void Game::Run_Game_Program(int mode, Hephaestus H, GLFWwindow* W, bool Mouse, int difficulty){
+void Game::Run_Game_Program_Single_Player(int mode, Hephaestus H, GLFWwindow* W, bool Mouse, int difficulty){
 	H_Game = H;
 	W_Game = W;
 	H_Game.Clear_All_Layers();
@@ -143,6 +143,138 @@ void Game::Run_Game_Program(int mode, Hephaestus H, GLFWwindow* W, bool Mouse, i
 					VY = H_Game.Layers[1]->Physics_Objects[0]->Return_Physics_Data(2);
 					VY = VY + (VX * Y_Ball) * 10;
 				}
+			}
+			H_Game.Layers[1]->Physics_Objects[0]->Set_Velocity_Physics_Object(VX, VY, 0.0);
+		}
+
+		Close();
+		H_Game.Display_All_Layers();
+		H_Game.Frame();
+	}
+	if (Game_Good != -1){
+		End_Screen();
+	}
+}
+void Game::Run_Game_Program_Multi_Player(int mode, Hephaestus H, GLFWwindow* W){
+	H_Game = H;
+	W_Game = W;
+	H_Game.Clear_All_Layers();
+	H_Game.Create_New_Layer();
+	H_Game.Layers[1]->Initilize_Object(6);
+	H_Game.Layers[1]->Physics_Objects[0]->New_Color_Physics_Object(4, 0.01, 0.01, 1.0, 1.0, 1.0, 1.0, 1);
+	H_Game.Layers[1]->Physics_Objects[0]->Set_Velocity_Reflection(105);
+	Mode = mode;
+	Difficulty = 2;
+	Pre_Game();
+	while (Game_Good == 0){
+		Every_Turn();
+		if (glfwGetKey(W_Game, GLFW_KEY_W) || glfwGetKey(W_Game, GLFW_KEY_UP)){
+			H_Game.Layers[1]->Colored_Objects[0]->Move_Object(0.0, Paddle_Speed, 0.0, 0, 0.1);
+		}
+		if (glfwGetKey(W_Game, GLFW_KEY_S) || glfwGetKey(W_Game, GLFW_KEY_DOWN)){
+			H_Game.Layers[1]->Colored_Objects[0]->Move_Object(0.0, -Paddle_Speed, 0.0, 0, 0.1);
+		}
+
+		double XP, YP;
+		float Y, Distance;
+		int YR, XR;
+		glfwGetCursorPos(W_Game, &XP, &YP);
+		Y = H_Game.Layers[1]->Colored_Objects[1]->Return_Float_Value(3);
+		H_Game.Win.Window_Res(XR, YR);
+		if (Y > (((YP / (YR / 2)) - 1) * -1) + 0.005){
+			Distance = (Y - (((YP / (YR / 2)) - 1) * -1));
+			if (Distance < Paddle_Speed_2){
+				H_Game.Layers[1]->Colored_Objects[1]->Move_Object(0.0, -Distance, 0.0, 0, 0.1);
+			}
+				else{
+					H_Game.Layers[1]->Colored_Objects[1]->Move_Object(0.0, -Paddle_Speed_2, 0.0, 0, 0.1);
+			}
+		}
+		else if (Y < (((YP / (YR / 2)) - 1) * -1) - 0.005){
+			Distance = Y - (((YP / (YR / 2)) - 1) * -1);
+			if (-Distance < Paddle_Speed_2){
+				H_Game.Layers[1]->Colored_Objects[1]->Move_Object(0.0, -Distance, 0.0, 0, 0.1);
+			}
+			else{
+				H_Game.Layers[1]->Colored_Objects[1]->Move_Object(0.0, Paddle_Speed_2, 0.0, 0, 0.1);
+			}
+		}
+		if (glfwGetKey(W_Game, GLFW_KEY_ESCAPE)){
+			Game_Good = -1;
+		}
+		Score();
+		if (Mode != 4 && Mode != 5){
+			Collision = H_Game.Layers[1]->Run_All_Physics(1);
+		}
+		else{
+			Collision = H_Game.Layers[1]->Run_All_Physics(2);
+		}
+		if (Collision == 1){
+			Paddle_Speed = Paddle_Speed + (Paddle_Speed * .05);
+			Paddle_Speed_2 = Paddle_Speed_2 + (Paddle_Speed_2 * .05);
+			float  Y_Paddle = 0.0, X_Paddle, Y_Ball, X_Ball, VY, VX;
+			Collision = 0;
+			if (Mode != 4 && Mode != 5){
+				Y_Ball = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(3);
+				X_Ball = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2);
+				if (H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2) > 0){
+					Y_Paddle = H_Game.Layers[1]->Colored_Objects[1]->Return_Float_Value(3);
+				}
+				if (H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2) < 0){
+					Y_Paddle = H_Game.Layers[1]->Colored_Objects[0]->Return_Float_Value(3);
+				}
+				Y_Ball = Y_Ball - Y_Paddle;
+				VX = H_Game.Layers[1]->Physics_Objects[0]->Return_Physics_Data(1);
+				VY = H_Game.Layers[1]->Physics_Objects[0]->Return_Physics_Data(2);
+
+				VY = VY + (VX * Y_Ball) * 10;
+				
+			}
+			if (Mode == 4 || Mode == 5){
+				float PX, PY;
+				PX = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2);
+				PY = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(3);
+				if (PX < -0.8){
+					Last_Hit = 1;
+				}
+				if (PX > 0.8){
+					Last_Hit = 2;
+				}
+				if (PY < -0.8){
+					Last_Hit = 4;
+				}
+				if (PY > 0.8){
+					Last_Hit = 3;
+				}
+				X_Ball = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2);
+				Y_Ball = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(3);
+				if (Last_Hit == 3){
+					X_Paddle = H_Game.Layers[1]->Colored_Objects[2]->Return_Float_Value(2);
+				}
+				if (Last_Hit == 4){
+					X_Paddle = H_Game.Layers[1]->Colored_Objects[3]->Return_Float_Value(2);
+				}
+				if (Last_Hit == 3 || Last_Hit == 4){
+					X_Ball = X_Ball - X_Paddle;
+					VX = H_Game.Layers[1]->Physics_Objects[0]->Return_Physics_Data(1);
+					VY = H_Game.Layers[1]->Physics_Objects[0]->Return_Physics_Data(2);
+					VX = VX + (VY * X_Ball) * 10;
+				}
+				if (Last_Hit == 1){
+					Y_Paddle = H_Game.Layers[1]->Colored_Objects[0]->Return_Float_Value(3);
+				}
+				if (Last_Hit == 2){
+					Y_Paddle = H_Game.Layers[1]->Colored_Objects[1]->Return_Float_Value(3);
+				}
+				if (Last_Hit == 1 || Last_Hit == 2){
+					Y_Ball = Y_Ball - Y_Paddle;
+					VX = H_Game.Layers[1]->Physics_Objects[0]->Return_Physics_Data(1);
+					VY = H_Game.Layers[1]->Physics_Objects[0]->Return_Physics_Data(2);
+					VY = VY + (VX * Y_Ball) * 10;
+				}
+			}
+			if (X_Ball > 0){
+				VY = VY * -1;
 			}
 			H_Game.Layers[1]->Physics_Objects[0]->Set_Velocity_Physics_Object(VX, VY, 0.0);
 		}

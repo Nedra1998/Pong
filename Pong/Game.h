@@ -37,5 +37,6 @@ private:
 public:
 	Hephaestus H_Game;
 	GLFWwindow* W_Game;
-	void Run_Game_Program(int mode, Hephaestus H, GLFWwindow* W, bool Mouse, int difficulty);
+	void Run_Game_Program_Single_Player(int mode, Hephaestus H, GLFWwindow* W, bool Mouse, int difficulty);
+	void Run_Game_Program_Multi_Player(int mode, Hephaestus H, GLFWwindow* W);
 };

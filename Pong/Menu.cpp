@@ -31,13 +31,10 @@ void Menu::Run_Menu_Program(Hephaestus H, GLFWwindow* W){
 				Single_Player_Menu_1();
 			}
 			if (Load == 3){
-				Multi_Player_Menu_1();
+				Multi_Player_Menu();
 			}
 			if (Load == 4){
 				Settings_Menu();
-			}
-			if (Load == 5){
-				Multi_Player_Menu_2();
 			}
 			if (Load == 6){
 				Single_Player_Menu_2();
@@ -45,14 +42,21 @@ void Menu::Run_Menu_Program(Hephaestus H, GLFWwindow* W){
 			Load = 0;
 			Delay = 10;
 		}
-		if (Load >= 10){
+		if (Load >= 10 && Load < 20){
 			if (Control == 1){
 				Mouse = true;
 			}
 			else{
 				Mouse = false;
 			}
-			G_Menu.Run_Game_Program(Load - 9, H_Menu, W_Menu, Mouse, Difficulty);
+			G_Menu.Run_Game_Program_Single_Player(Load - 9, H_Menu, W_Menu, Mouse, Difficulty);
+			Load = 1;
+			Stage = 1;
+			Delay = 10;
+		}
+		if (Load >= 20){
+		
+			G_Menu.Run_Game_Program_Multi_Player(Load - 19, H_Menu, W_Menu);
 			Load = 1;
 			Stage = 1;
 			Delay = 10;
@@ -75,12 +79,9 @@ void Menu::Run_Menu_Program(Hephaestus H, GLFWwindow* W){
 						Load = 3;
 					}
 					if (Button == 2){
-
-					}
-					if (Button == 3){
 						Load = 4;
 					}
-					if (Button == 4){
+					if (Button == 3){
 						Good = false;
 						Load = -1;
 					}
@@ -111,10 +112,13 @@ void Menu::Run_Menu_Program(Hephaestus H, GLFWwindow* W){
 					}
 				}
 				else if (Stage == 3){
-					if (Button == 0 || Button == 1 || Button == 2){
-						Load = 5;
+					if (Button == 0){
+						Load = 20;
 					}
-					if (Button == 3){
+					if (Button == 1){
+						Load = 22;
+					}
+					if (Button == 2){
 						Load = 1;
 					}
 				}
@@ -163,11 +167,6 @@ void Menu::Run_Menu_Program(Hephaestus H, GLFWwindow* W){
 						Load = 4;
 					}
 				}
-				else if (Stage == 5){
-					if (Button == 2){
-						Load = 3;
-					}
-				}
 				else if (Stage == 6){
 					if (Button != 4 && Button != -1){
 						Difficulty = Button;
@@ -198,17 +197,14 @@ void Menu::Main_Menu(){
 	H_Menu.Layers[1]->Button_Objects[0]->New_Button_Object("/Single Player/", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
 	H_Menu.Layers[1]->Button_Objects[0]->Translate_Button_Object(0.0, 0.2, 0.0);
 	H_Menu.Layers[1]->Initilize_Object(4);
-	H_Menu.Layers[1]->Button_Objects[1]->New_Button_Object("ID/Multi Player/ID", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
+	H_Menu.Layers[1]->Button_Objects[1]->New_Button_Object("/Multi Player/", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
 	H_Menu.Layers[1]->Button_Objects[1]->Translate_Button_Object(0.0, 0.0, 0.0);
 	H_Menu.Layers[1]->Initilize_Object(4);
-	H_Menu.Layers[1]->Button_Objects[2]->New_Button_Object("ID/High Scores/ID", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
+	H_Menu.Layers[1]->Button_Objects[2]->New_Button_Object("/Settings/", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
 	H_Menu.Layers[1]->Button_Objects[2]->Translate_Button_Object(0.0, -0.2, 0.0);
 	H_Menu.Layers[1]->Initilize_Object(4);
-	H_Menu.Layers[1]->Button_Objects[3]->New_Button_Object("/Settings/", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
+	H_Menu.Layers[1]->Button_Objects[3]->New_Button_Object("/Quit/", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
 	H_Menu.Layers[1]->Button_Objects[3]->Translate_Button_Object(0.0, -0.4, 0.0);
-	H_Menu.Layers[1]->Initilize_Object(4);
-	H_Menu.Layers[1]->Button_Objects[4]->New_Button_Object("/Quit/", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
-	H_Menu.Layers[1]->Button_Objects[4]->Translate_Button_Object(0.0, -0.6, 0.0);
 }
 void Menu::Settings_Menu(){
 	int x, y;
@@ -301,34 +297,16 @@ void Menu::Single_Player_Menu_2(){
 	H_Menu.Layers[1]->Button_Objects[4]->New_Button_Object("/Back/", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
 	H_Menu.Layers[1]->Button_Objects[4]->Translate_Button_Object(0.0, -0.6, 0.0);
 }
-void Menu::Multi_Player_Menu_1(){
+void Menu::Multi_Player_Menu(){
 	H_Menu.Layers[0]->Initilize_Object(4);
 	H_Menu.Layers[0]->Button_Objects[0]->New_Button_Object("MULTI PLAYER", "Textures/Buttons/Transparent", "Basic/White", 1.0, 0.4);
 	H_Menu.Layers[0]->Button_Objects[0]->Translate_Button_Object(0.0, 0.7, 0.0);
 	H_Menu.Create_New_Layer();
 	H_Menu.Layers[1]->Initilize_Object(4);
-	H_Menu.Layers[1]->Button_Objects[0]->New_Button_Object("/2/", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
+	H_Menu.Layers[1]->Button_Objects[0]->New_Button_Object("/Classic/", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
 	H_Menu.Layers[1]->Button_Objects[0]->Translate_Button_Object(0.0, 0.2, 0.0);
 	H_Menu.Layers[1]->Initilize_Object(4);
-	H_Menu.Layers[1]->Button_Objects[1]->New_Button_Object("/3/", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
-	H_Menu.Layers[1]->Button_Objects[1]->Translate_Button_Object(0.0, 0.0, 0.0);
-	H_Menu.Layers[1]->Initilize_Object(4);
-	H_Menu.Layers[1]->Button_Objects[2]->New_Button_Object("/4/", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
-	H_Menu.Layers[1]->Button_Objects[2]->Translate_Button_Object(0.0, -0.2, 0.0);
-	H_Menu.Layers[1]->Initilize_Object(4);
-	H_Menu.Layers[1]->Button_Objects[3]->New_Button_Object("/Back/", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
-	H_Menu.Layers[1]->Button_Objects[3]->Translate_Button_Object(0.0, -0.4, 0.0);
-}
-void Menu::Multi_Player_Menu_2(){
-	H_Menu.Layers[0]->Initilize_Object(4);
-	H_Menu.Layers[0]->Button_Objects[0]->New_Button_Object("MULTI PLAYER", "Textures/Buttons/Transparent", "Basic/White", 1.0, 0.4);
-	H_Menu.Layers[0]->Button_Objects[0]->Translate_Button_Object(0.0, 0.7, 0.0);
-	H_Menu.Create_New_Layer();
-	H_Menu.Layers[1]->Initilize_Object(4);
-	H_Menu.Layers[1]->Button_Objects[0]->New_Button_Object("SID/Classic/SID", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
-	H_Menu.Layers[1]->Button_Objects[0]->Translate_Button_Object(0.0, 0.2, 0.0);
-	H_Menu.Layers[1]->Initilize_Object(4);
-	H_Menu.Layers[1]->Button_Objects[1]->New_Button_Object("SID/Special/SID", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
+	H_Menu.Layers[1]->Button_Objects[1]->New_Button_Object("/Power Up/", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
 	H_Menu.Layers[1]->Button_Objects[1]->Translate_Button_Object(0.0, 0.0, 0.0);
 	H_Menu.Layers[1]->Initilize_Object(4);
 	H_Menu.Layers[1]->Button_Objects[2]->New_Button_Object("/Back/", "Textures/Buttons/Selection", "Basic/White", 0.5, .1);
