@@ -214,65 +214,18 @@ void Game::Run_Game_Program_Multi_Player(int mode, Hephaestus H, GLFWwindow* W){
 			Paddle_Speed_2 = Paddle_Speed_2 + (Paddle_Speed_2 * .05);
 			float  Y_Paddle = 0.0, X_Paddle, Y_Ball, X_Ball, VY, VX;
 			Collision = 0;
-			if (Mode != 4 && Mode != 5){
-				Y_Ball = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(3);
+			Y_Ball = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(3);
 				X_Ball = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2);
-				if (H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2) > 0){
-					Y_Paddle = H_Game.Layers[1]->Colored_Objects[1]->Return_Float_Value(3);
-				}
-				if (H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2) < 0){
-					Y_Paddle = H_Game.Layers[1]->Colored_Objects[0]->Return_Float_Value(3);
-				}
-				Y_Ball = Y_Ball - Y_Paddle;
-				VX = H_Game.Layers[1]->Physics_Objects[0]->Return_Physics_Data(1);
-				VY = H_Game.Layers[1]->Physics_Objects[0]->Return_Physics_Data(2);
-
-				VY = VY + (VX * Y_Ball) * 10;
-				
+			if (H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2) > 0){
+				Y_Paddle = H_Game.Layers[1]->Colored_Objects[1]->Return_Float_Value(3);
 			}
-			if (Mode == 4 || Mode == 5){
-				float PX, PY;
-				PX = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2);
-				PY = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(3);
-				if (PX < -0.8){
-					Last_Hit = 1;
-				}
-				if (PX > 0.8){
-					Last_Hit = 2;
-				}
-				if (PY < -0.8){
-					Last_Hit = 4;
-				}
-				if (PY > 0.8){
-					Last_Hit = 3;
-				}
-				X_Ball = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2);
-				Y_Ball = H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(3);
-				if (Last_Hit == 3){
-					X_Paddle = H_Game.Layers[1]->Colored_Objects[2]->Return_Float_Value(2);
-				}
-				if (Last_Hit == 4){
-					X_Paddle = H_Game.Layers[1]->Colored_Objects[3]->Return_Float_Value(2);
-				}
-				if (Last_Hit == 3 || Last_Hit == 4){
-					X_Ball = X_Ball - X_Paddle;
-					VX = H_Game.Layers[1]->Physics_Objects[0]->Return_Physics_Data(1);
-					VY = H_Game.Layers[1]->Physics_Objects[0]->Return_Physics_Data(2);
-					VX = VX + (VY * X_Ball) * 10;
-				}
-				if (Last_Hit == 1){
-					Y_Paddle = H_Game.Layers[1]->Colored_Objects[0]->Return_Float_Value(3);
-				}
-				if (Last_Hit == 2){
-					Y_Paddle = H_Game.Layers[1]->Colored_Objects[1]->Return_Float_Value(3);
-				}
-				if (Last_Hit == 1 || Last_Hit == 2){
-					Y_Ball = Y_Ball - Y_Paddle;
-					VX = H_Game.Layers[1]->Physics_Objects[0]->Return_Physics_Data(1);
-					VY = H_Game.Layers[1]->Physics_Objects[0]->Return_Physics_Data(2);
-					VY = VY + (VX * Y_Ball) * 10;
-				}
+			if (H_Game.Layers[1]->Physics_Objects[0]->Physics->Return_Float_Value(2) < 0){
+				Y_Paddle = H_Game.Layers[1]->Colored_Objects[0]->Return_Float_Value(3);
 			}
+			Y_Ball = Y_Ball - Y_Paddle;
+			VX = H_Game.Layers[1]->Physics_Objects[0]->Return_Physics_Data(1);
+			VY = H_Game.Layers[1]->Physics_Objects[0]->Return_Physics_Data(2);
+			VY = VY + (VX * Y_Ball) * 10;
 			if (X_Ball > 0){
 				VY = VY * -1;
 			}
@@ -284,6 +237,7 @@ void Game::Run_Game_Program_Multi_Player(int mode, Hephaestus H, GLFWwindow* W){
 		H_Game.Frame();
 	}
 	if (Game_Good != -1){
+		Game_Good = Game_Good + 2;
 		End_Screen();
 	}
 }
@@ -928,9 +882,19 @@ void Game::End_Screen(){
 			H_Game.Layers[0]->Button_Objects[0]->New_Button_Object("YOU WIN", "Textures/Buttons/Transparent", "Basic/White", 1.0, 0.5);
 			H_Game.Layers[0]->Button_Objects[0]->Translate_Button_Object(0.0, 0.5, 0.0);
 		}
-		else{
+		else if(Game_Good == 2){
 			H_Game.Layers[0]->Initilize_Object(4);
 			H_Game.Layers[0]->Button_Objects[0]->New_Button_Object("YOU LOSE", "Textures/Buttons/Transparent", "Basic/White", 1.0, 0.5);
+			H_Game.Layers[0]->Button_Objects[0]->Translate_Button_Object(0.0, 0.5, 0.0);
+		}
+		else if (Game_Good == 3){
+			H_Game.Layers[0]->Initilize_Object(4);
+			H_Game.Layers[0]->Button_Objects[0]->New_Button_Object("PLAYER 1 WINS", "Textures/Buttons/Transparent", "Basic/White", 1.0, 0.5);
+			H_Game.Layers[0]->Button_Objects[0]->Translate_Button_Object(0.0, 0.5, 0.0);
+		}
+		else if (Game_Good == 4){
+			H_Game.Layers[0]->Initilize_Object(4);
+			H_Game.Layers[0]->Button_Objects[0]->New_Button_Object("PLAYER 2 WINS", "Textures/Buttons/Transparent", "Basic/White", 1.0, 0.5);
 			H_Game.Layers[0]->Button_Objects[0]->Translate_Button_Object(0.0, 0.5, 0.0);
 		}
 	}
@@ -951,9 +915,19 @@ void Game::End_Screen(){
 			H_Game.Layers[0]->Button_Objects[0]->New_Button_Object("YOU WIN", "Textures/Buttons/Transparent", "Basic/White", 1.0, 0.5);
 			H_Game.Layers[0]->Button_Objects[0]->Translate_Button_Object(0.0, 0.5, 0.0);
 		}
-		else{
+		else if (Game_Good == 2){
 			H_Game.Layers[0]->Initilize_Object(4);
 			H_Game.Layers[0]->Button_Objects[0]->New_Button_Object("YOU LOSE", "Textures/Buttons/Transparent", "Basic/White", 1.0, 0.5);
+			H_Game.Layers[0]->Button_Objects[0]->Translate_Button_Object(0.0, 0.5, 0.0);
+		}
+		else if (Game_Good == 3){
+			H_Game.Layers[0]->Initilize_Object(4);
+			H_Game.Layers[0]->Button_Objects[0]->New_Button_Object("PLAYER 1 WINS", "Textures/Buttons/Transparent", "Basic/White", 1.0, 0.5);
+			H_Game.Layers[0]->Button_Objects[0]->Translate_Button_Object(0.0, 0.5, 0.0);
+		}
+		else if (Game_Good == 4){
+			H_Game.Layers[0]->Initilize_Object(4);
+			H_Game.Layers[0]->Button_Objects[0]->New_Button_Object("PLAYER 2 WINS", "Textures/Buttons/Transparent", "Basic/White", 1.0, 0.5);
 			H_Game.Layers[0]->Button_Objects[0]->Translate_Button_Object(0.0, 0.5, 0.0);
 		}
 	}
